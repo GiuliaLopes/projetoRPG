@@ -5,7 +5,7 @@ class Character {
     defense = 0;
   
     constructor(name) {
-      this.name = name
+      this.name = name;
     }
     get life() {
       return this._life;
@@ -55,73 +55,79 @@ class Character {
     }
   }
   
-  //quando iniciar um cenario ele carrega as 4 informacoes
   class Stage {
     constructor(fighter1, fighter2, fighter1El, fighter2El, logObject) {
       this.fighter1 = fighter1;
       this.fighter2 = fighter2;
       this.fighter1El = fighter1El;
       this.fighter2El = fighter2El;
-      this.log -= logObject;
+      this.log = logObject;
     }
   
     start() {
       this.update();
+      
+      this.fighter1El.querySelector('.attackButton').addEventListener('click', ()=> this.doAttack(this.fighter1, this.fighter2));
+      this.fighter2El.querySelector('.attackButton').addEventListener('click', ()=> this.doAttack(this.fighter2, this.fighter1));    
     }
-  
+    
+   //Definindo como será visualizado o nome dos personagens e sua força. Ele sempre se altera conforme a interação com o jogo
     update() {
-      // Fighter 1 - colocando o nome
-         // Fighter 2 - corrigindo o seletor
-         this.fighter1El.querySelector('.name').innerHTML = `${this.fighter1.name} - ${this.fighter1.life.toFixed(1)} HP`;
-         let f1Pct = (this.fighter1.life / this.fighter1.maxLife) * 100;
-         this.fighter1El.querySelector('.bar').style.width = `${f1Pct}%`;
-
-         this.fighter2El.querySelector('.name').innerHTML = `${this.fighter2.name} - ${this.fighter2.life.toFixed(2)} HP`;
-         let f2Pct = (this.fighter2.life / this.fighter2.maxLife) * 100;
-         this.fighter2El.querySelector('.bar').style.width = `${f2Pct}%`;
-    }
+      this.fighter1El.querySelector('.name').innerHTML = `${this.fighter1.name} - ${this.fighter1.life.toFixed(1)} HP`;
+      let f1Pct = (this.fighter1.life / this.fighter1.maxLife) * 100;
+      this.fighter1El.querySelector('.bar').style.width = `${f1Pct}%`;
   
+      this.fighter2El.querySelector('.name').innerHTML = `${this.fighter2.name} - ${this.fighter2.life.toFixed(2)} HP`;
+      let f2Pct = (this.fighter2.life / this.fighter2.maxLife) * 100;
+      this.fighter2El.querySelector('.bar').style.width = `${f2Pct}%`;
+    }
+    
+  //Essa função serve para que haja ataques e defesas e seja mostrado em tela essa interação
     doAttack(attacking, attacked) {
-        if (attacking.life <=0 || attacked.life  <=0){
+      if (attacking.life <= 0 || attacked.life <= 0) {
         this.log.addMessage('ATACANDO');
         return;
-        }
-
-        let attackFator = (Math.random() * 2).toFixed(2);
-        let defensefactor = (Math.random() * 2).toFixed(2);
-        
-        let actualAttack = attacking.attack * attackFator;
-        let actualDefense = attacked.defense * defensefactor;
-
-        if(actualAttack > actualDefense){
-            attacked.life -= actualAttack;
-            this.log.addMessage(`${attacking.name} causou ${actualAttack.toFixed(2)}danos ... em ${attacked.name}`)
-        }else{
-            this.log.addMessageg(`${attacked.name} consegui defender ...`)
-        }
-        this.update();
+      }
+  
+      let attackFactor = (Math.random() * 2).toFixed(2);
+      let defenseFactor = (Math.random() * 2).toFixed(2);
+  
+      let actualAttack = attacking.attack * attackFactor;
+      let actualDefense = attacked.defense * defenseFactor;
+  
+      if (actualAttack > actualDefense) {
+        attacked.life -= actualAttack;
+        this.log.addMessage(`${attacking.name} causou ${actualAttack.toFixed(2)} danos ... em ${attacked.name}`);
+      } else {
+        this.log.addMessage(`${attacked.name} conseguiu defender ...`);
+      }
+      this.update();
     }
   }
-
-  class log {
+  
+  class Log {
     list = [];
-
-    constructor(listEl){
-        this.listEl = listEl;
+  
+    constructor(listEl) {
+      this.listEl = listEl;
     }
-    addMessage(msg){
-        this.list.push(msg);
-        this.render();
+  
+    addMessage(msg) {
+      this.list.push(msg);
+      this.render();
+    }
+    render() {
+      this.listEl.innerHTML = '';
+  
+      for (let i in this.list) {
+        this.listEl.innerHTML += `<li>${this.list[i]}</li>`;
+      }
+    }
   }
-    render(){
-        this.listEl.innerHTML = '';
-        
-        for(let i in this.lis){
-            this.listEl.innerHTML += `<li>${this.list[1]}</li>`
-        }
-    }
-}
-let char = new Knight('Celin');
+  
+  const log = new Log(document.querySelector('.log'));
+  
+  let char = new Knight('Celin');
   let monster = new LitterMonster();
   const stage = new Stage(
     char,
@@ -131,4 +137,4 @@ let char = new Knight('Celin');
     log
   );
   
-  stage.start();
+  stage.start(); 
